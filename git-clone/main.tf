@@ -56,6 +56,12 @@ variable "folder_name" {
   default     = ""
 }
 
+variable "recurse_submodules" {
+  description = "Whether to recurse submodules."
+  type        = bool
+  default     = false
+}
+
 locals {
   # Remove query parameters and fragments from the URL
   url = replace(replace(var.url, "/\\?.*/", ""), "/#.*/", "")
@@ -113,6 +119,7 @@ resource "coder_script" "git_clone" {
     CLONE_PATH = local.clone_path,
     REPO_URL : local.clone_url,
     BRANCH_NAME : local.branch_name,
+    RECURSE_SUBMODULES : var.recurse_submodules
   })
   display_name       = "Git Clone"
   icon               = "/icon/git.svg"

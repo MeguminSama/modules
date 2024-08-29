@@ -3,6 +3,7 @@
 REPO_URL="${REPO_URL}"
 CLONE_PATH="${CLONE_PATH}"
 BRANCH_NAME="${BRANCH_NAME}"
+RECURSE_SUBMODULES="${RECURSE_SUBMODULES}"
 # Expand home if it's specified!
 CLONE_PATH="$${CLONE_PATH/#\~/$${HOME}}"
 
@@ -34,12 +35,19 @@ fi
 # Check if the directory is empty
 # and if it is, clone the repo, otherwise skip cloning
 if [ -z "$(ls -A "$CLONE_PATH")" ]; then
+
+  # if RECURSE_SUBMODULES is set to true, then clone with --recurse-submodules
+  GIT_CMD="git clone"
+  if [ "$RECURSE_SUBMODULES" = "true" ]; then
+    GIT_CMD="$GIT_CMD --recurse-submodules"
+  fi
+
   if [ -z "$BRANCH_NAME" ]; then
     echo "Cloning $REPO_URL to $CLONE_PATH..."
-    git clone "$REPO_URL" "$CLONE_PATH"
+    $GIT_CMD "$REPO_URL" "$CLONE_PATH"
   else
     echo "Cloning $REPO_URL to $CLONE_PATH on branch $BRANCH_NAME..."
-    git clone "$REPO_URL" -b "$BRANCH_NAME" "$CLONE_PATH"
+    $GIT_CMD -b "$BRANCH_NAME" "$REPO_URL" "$CLONE_PATH"
   fi
 else
   echo "$CLONE_PATH already exists and isn't empty, skipping clone!"
